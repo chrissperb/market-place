@@ -105,19 +105,6 @@ npm run dev
 
 Then open http://localhost:5173 in your browser.
 
-### Production build
-
-```bash
-npm run build
-npm run preview
-```
-
-### Lint
-
-```bash
-npx oxlint src
-```
-
 ## Demo credentials
 
 Log in with either mock account (password for both is `demo1234`):
