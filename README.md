@@ -1,6 +1,19 @@
 # SeaRent — Marine Sports Marketplace
 
-A Single Page Application (SPA) demo for renting marine sport equipment —
+**React** is a JavaScript library for building user interfaces. It lets you
+compose complex UIs out of small, reusable components, each managing its own
+state, and it keeps the rendered interface in sync with that state through a
+virtual DOM. That declarative model is why it is so widely used in front end
+development: instead of imperatively updating the DOM whenever data changes,
+you describe *what* the UI should look like for a given state, and React
+handles the *how* — dependencies update automatically, re-renders are kept
+fast and predictable, and components stay easy to reason about, test and
+reuse. Combined with its huge ecosystem, server-side rendering, and a robust
+tooling story, React lets teams build interactive, high-performance user
+interfaces at scale, which is exactly the front end foundation this project
+relies on.
+
+This is a Single Page Application (SPA) demo for renting marine sport equipment —
 boats, jet skis, waverunners, kayaks, stand-up paddle boards, surfboards and
 fishing gear — by the hour.
 
