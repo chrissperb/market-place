@@ -76,7 +76,8 @@ export default function Confirmation() {
                   className="flex justify-between text-sm text-slate-300"
                 >
                   <span>
-                    {i.name} × {i.qty} ({i.hours}h)
+                    {i.name} × {i.qty}
+                    {i.soldBy === 'unit' ? ' (buy)' : ` (${i.hours}h)`}
                   </span>
                   <span className="font-semibold">
                     {formatPrice(i.lineTotal)}

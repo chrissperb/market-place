@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import api from '../services/api'
 import { useCart } from '../context/CartContext'
 import { CATEGORY_LABELS } from '../data/inventory'
-import { formatPrice } from '../utils/format'
+import { formatPrice, isForSale, lineTotal } from '../utils/format'
 
 export default function ItemDetail() {
   const { id } = useParams()
@@ -73,7 +73,8 @@ export default function ItemDetail() {
     )
   }
 
-  const total = item.pricePerHour * hours * qty
+  const sale = isForSale(item)
+  const total = lineTotal(item, hours, qty)
   const soldOut = item.stock === 0
 
   const handleAdd = () => {
@@ -127,37 +128,47 @@ export default function ItemDetail() {
 
           <div className="mt-6 rounded-2xl bg-slate-800 p-5 ring-1 ring-slate-700">
             <div className="flex items-baseline gap-2">
+              {sale && item.compareAt && (
+                <span className="text-lg text-slate-400 line-through">
+                  {formatPrice(item.compareAt)}
+                </span>
+              )}
               <span className="text-3xl font-bold text-cyan-400">
-                {formatPrice(item.pricePerHour)}
+                {formatPrice(sale ? item.price : item.pricePerHour)}
               </span>
-              <span className="text-slate-400">/hour</span>
+              {!sale && <span className="text-slate-400">/hour</span>}
             </div>
-            <p className="mt-1 text-sm text-slate-400">
-              Refundable deposit: {formatPrice(item.deposit)}
-            </p>
+
+            {!sale && (
+              <p className="mt-1 text-sm text-slate-400">
+                Refundable deposit: {formatPrice(item.deposit)}
+              </p>
+            )}
 
             <div className="mt-5 grid grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="hours"
-                  className="mb-1 block text-sm font-medium text-slate-300"
-                >
-                  Hours
-                </label>
-                <input
-                  id="hours"
-                  type="number"
-                  min="1"
-                  max="24"
-                  value={hours}
-                  onChange={(e) =>
-                    setHours(Math.max(1, Math.min(24, Number(e.target.value) || 1)))
-                  }
-                  disabled={soldOut}
-                  className="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2.5 text-white focus:border-cyan-500 focus:outline-none disabled:opacity-50"
-                />
-              </div>
-              <div>
+              {!sale && (
+                <div>
+                  <label
+                    htmlFor="hours"
+                    className="mb-1 block text-sm font-medium text-slate-300"
+                  >
+                    Hours
+                  </label>
+                  <input
+                    id="hours"
+                    type="number"
+                    min="1"
+                    max="24"
+                    value={hours}
+                    onChange={(e) =>
+                      setHours(Math.max(1, Math.min(24, Number(e.target.value) || 1)))
+                    }
+                    disabled={soldOut}
+                    className="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2.5 text-white focus:border-cyan-500 focus:outline-none disabled:opacity-50"
+                  />
+                </div>
+              )}
+              <div className={sale ? 'col-span-2' : ''}>
                 <label
                   htmlFor="qty"
                   className="mb-1 block text-sm font-medium text-slate-300"
@@ -181,6 +192,12 @@ export default function ItemDetail() {
               </div>
             </div>
 
+            <p className="mt-5 text-sm text-slate-300">
+              {sale
+                ? 'Buy it now at the discounted price.'
+                : 'Book by the hour, pay only for time on the water.'}
+            </p>
+
             <div className="mt-5 flex items-center justify-between border-t border-slate-700 pt-4">
               <span className="text-slate-300">Estimated total</span>
               <span className="text-lg font-bold text-white">
@@ -193,7 +210,13 @@ export default function ItemDetail() {
               disabled={soldOut}
               className="mt-4 w-full rounded-xl bg-cyan-500 py-3 font-semibold text-slate-900 transition-colors hover:bg-cyan-400 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
             >
-              {soldOut ? 'Sold out' : added ? 'Added to cart ✓' : 'Add to cart'}
+              {soldOut
+                ? 'Sold out'
+                : added
+                  ? `${sale ? 'Added' : 'Added to cart'} ✓`
+                  : sale
+                    ? 'Buy now'
+                    : 'Add to cart'}
             </button>
 
             {added && (

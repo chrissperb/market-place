@@ -12,8 +12,8 @@ export default function Footer() {
             <span className="text-lg font-bold text-white">SeaRent</span>
           </div>
           <p className="mt-3 text-sm text-slate-400">
-            Rent marine sport equipment on the water, by the hour. Demo
-            marketplace — no real bookings.
+            Rent marine sport equipment by the hour, or buy gear at a
+            discount. Demo marketplace — no real bookings.
           </p>
         </div>
 

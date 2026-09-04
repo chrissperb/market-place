@@ -15,7 +15,9 @@ relies on.
 
 This is a Single Page Application (SPA) demo for renting marine sport equipment —
 boats, jet skis, waverunners, kayaks, stand-up paddle boards, surfboards and
-fishing gear — by the hour.
+fishing gear. Items can be **rented by the hour** or **bought** at a discount
+(the `soldBy` field on each inventory item is `'hour'` for rentals and `'unit'`
+for products for sale).
 
 Built with **React**, **Vite**, **Tailwind CSS v4** and **React Router v7**.
 No backend and no database: all data is mocked in-memory and persisted to
@@ -27,8 +29,8 @@ No backend and no database: all data is mocked in-memory and persisted to
 
 - **Browse & search** — filter the catalog by category, keyword and price,
   with in-URL query parameters (`/market?category=jetski&q=sea-doo`).
-- **Item detail** — view price, rating, location, availability and rent by
-  hours × quantity.
+- **Item detail** — view price, rating, location, availability; rent by
+  hours × quantity or buy (no hours) at the discounted price.
 - **Cart** — add items, adjust hours/quantity, persisted across refreshes.
 - **Checkout** — mock booking flow with a login gate.
 - **Confirmation** — booking reference + order summary after checkout.

@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
 import { CATEGORY_LABELS } from '../data/inventory'
-import { formatPrice } from '../utils/format'
+import { formatPrice, isForSale, unitPrice } from '../utils/format'
 
 export default function ItemCard({ item }) {
+  const sale = isForSale(item)
   return (
     <Link
       to={`/item/${item.id}`}
@@ -18,8 +19,13 @@ export default function ItemCard({ item }) {
         <span className="absolute left-3 top-3 rounded-full bg-slate-900/80 px-2.5 py-1 text-xs font-medium text-white backdrop-blur">
           {CATEGORY_LABELS[item.category] || item.category}
         </span>
+        {sale && (
+          <span className="absolute right-3 top-3 rounded-full bg-rose-500 px-2.5 py-1 text-xs font-semibold text-white">
+            Sale
+          </span>
+        )}
         {item.stock === 0 && (
-          <span className="absolute right-3 top-3 rounded-full bg-red-500/90 px-2.5 py-1 text-xs font-semibold text-white">
+          <span className="absolute bottom-3 left-3 rounded-full bg-red-500/90 px-2.5 py-1 text-xs font-semibold text-white">
             Sold out
           </span>
         )}
@@ -36,13 +42,18 @@ export default function ItemCard({ item }) {
 
         <div className="mt-auto flex items-center justify-between pt-4">
           <div>
+            {sale && item.compareAt && (
+              <span className="mr-2 text-sm text-slate-400 line-through">
+                {formatPrice(item.compareAt)}
+              </span>
+            )}
             <span className="text-lg font-bold text-cyan-400">
-              {formatPrice(item.pricePerHour)}
+              {formatPrice(unitPrice(item))}
             </span>
-            <span className="text-sm text-slate-400"> /hour</span>
+            {!sale && <span className="text-sm text-slate-400"> /hour</span>}
           </div>
           <span className="rounded-lg bg-cyan-500/10 px-3 py-1.5 text-sm font-semibold text-cyan-400 ring-1 ring-cyan-500/40 transition-colors group-hover:bg-cyan-500 group-hover:text-slate-900">
-            View
+            {sale ? 'Buy' : 'View'}
           </span>
         </div>
       </div>
