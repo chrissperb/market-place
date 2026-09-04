@@ -8,6 +8,7 @@ import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import Confirmation from './pages/Confirmation'
 import Login from './pages/Login'
+import AddProduct from './pages/AddProduct'
 import NotFound from './pages/NotFound'
 
 export default function App() {
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/confirmation" element={<Confirmation />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/add-product" element={<AddProduct />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

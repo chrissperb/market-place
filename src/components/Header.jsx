@@ -54,6 +54,20 @@ export default function Header() {
         <div className="hidden items-center gap-3 md:flex">
           {user ? (
             <>
+              {user.role === 'admin' && (
+                <NavLink
+                  to="/add-product"
+                  className={({ isActive }) =>
+                    `rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors ${
+                      isActive
+                        ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400'
+                        : 'border-slate-600 text-slate-200 hover:bg-slate-700'
+                    }`
+                  }
+                >
+                  + Add product
+                </NavLink>
+              )}
               <span className="text-sm text-slate-300">{user.name}</span>
               <button
                 onClick={handleLogout}
@@ -103,6 +117,15 @@ export default function Header() {
           <NavLink to="/cart" className={linkClass} onClick={() => setOpen(false)}>
             Cart{count > 0 ? ` (${count})` : ''}
           </NavLink>
+          {user && user.role === 'admin' && (
+            <NavLink
+              to="/add-product"
+              className={linkClass}
+              onClick={() => setOpen(false)}
+            >
+              + Add product
+            </NavLink>
+          )}
           <div className="mt-2 border-t border-slate-700/60 pt-3">
             {user ? (
               <div className="flex items-center justify-between">

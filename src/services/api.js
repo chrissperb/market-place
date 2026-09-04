@@ -3,16 +3,35 @@ import users from '../data/users'
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
+const EXTRAS_KEY = 'marine.extra_products'
+
+function loadExtras() {
+  try {
+    const raw = localStorage.getItem(EXTRAS_KEY)
+    return raw ? JSON.parse(raw) : []
+  } catch {
+    return []
+  }
+}
+
+function saveExtras(extras) {
+  localStorage.setItem(EXTRAS_KEY, JSON.stringify(extras))
+}
+
+function allItems() {
+  return [...inventory, ...loadExtras()]
+}
+
 const api = {
   /* Catalog */
   async getInventory() {
     await delay(300)
-    return [...inventory]
+    return allItems()
   },
 
   async getItem(id) {
     await delay(200)
-    const item = inventory.find((i) => i.id === id)
+    const item = allItems().find((i) => i.id === id)
     if (!item) {
       throw new Error('NOT_FOUND')
     }
@@ -21,7 +40,19 @@ const api = {
 
   async getCategories() {
     await delay(100)
-    return [...new Set(inventory.map((i) => i.category))]
+    return [...new Set(allItems().map((i) => i.category))]
+  },
+
+  async addProduct(data) {
+    await delay(400)
+    const extras = loadExtras()
+    const product = {
+      ...data,
+      id: `ext-${Date.now()}`,
+    }
+    extras.push(product)
+    saveExtras(extras)
+    return { ...product }
   },
 
   /* Auth */
