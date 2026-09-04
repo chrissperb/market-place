@@ -8,7 +8,7 @@ const linkClass = ({ isActive }) =>
     isActive ? 'text-cyan-500' : 'text-slate-200 hover:text-white'
   }`
 
-export default function Navbar() {
+export default function Header() {
   const { user, logout } = useAuth()
   const { count } = useCart()
   const navigate = useNavigate()

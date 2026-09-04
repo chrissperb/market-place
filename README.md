@@ -85,7 +85,7 @@ market-place/
     │   ├── CartContext.jsx   # cart state + persistence
     │   └── BookingsContext.jsx
     ├── components/
-    │   ├── Navbar.jsx
+    │   ├── Header.jsx
     │   ├── Footer.jsx
     │   ├── ItemCard.jsx
     │   └── FilterBar.jsx
