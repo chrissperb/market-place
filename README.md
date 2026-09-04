@@ -31,10 +31,18 @@ No backend and no database: all data is mocked in-memory and persisted to
   with in-URL query parameters (`/market?category=jetski&q=sea-doo`).
 - **Item detail** — view price, rating, location, availability; rent by
   hours × quantity or buy (no hours) at the discounted price.
-- **Cart** — add items, adjust hours/quantity, persisted across refreshes.
-- **Checkout** — mock booking flow with a login gate.
+- **Products for sale** — discounted gear with a `compareAt` original price,
+  shown under the dedicated "Offers" category and highlighted in a homepage
+  deal banner.
+- **Cart** — add rental or sale items, adjust hours/quantity (hours hidden
+  for sale items), persisted across refreshes.
+- **Checkout** — mock booking/purchase flow with a login gate.
 - **Confirmation** — booking reference + order summary after checkout.
 - **Authentication** — mock login (no backend). Demo credentials included.
+- **Admin product creation** — logged-in admins can add new products via a
+  form at `/add-product` (name, category, pricing, image URL, stock, etc.).
+  New products are persisted in `localStorage` and appear in the catalog
+  immediately.
 - **404 page** — friendly not-found screen for unknown routes.
 - **Responsive** — mobile-first layout with a hamburger menu.
 - **Accessible** — skip-to-content link, ARIA labels, visible focus.
@@ -50,6 +58,7 @@ No backend and no database: all data is mocked in-memory and persisted to
 | `/checkout`         | Checkout      | Booking form (requires login)                |
 | `/confirmation`     | Confirmation  | Booking reference + summary                  |
 | `/login`            | Login         | Mock authentication                          |
+| `/add-product`      | Add Product   | Admin-only form to create new catalog items  |
 | `*`                 | 404           | Not-found page for unknown routes            |
 
 ### Data via routes & parameters
@@ -78,10 +87,10 @@ market-place/
     ├── App.jsx               # layout, routes, 404 catch-all
     ├── index.css             # Tailwind import + base styles
     ├── data/
-    │   ├── inventory.js      # seeded rental catalog
-    │   └── users.js          # mock users (demo credentials)
+    │   ├── inventory.js      # seeded catalog (rental + offers)
+    │   └── users.js          # mock users with roles
     ├── services/
-    │   └── api.js            # fake async API layer (swappable)
+    │   └── api.js            # fake async API layer + localStorage extras
     ├── context/
     │   ├── AuthContext.jsx   # mock login/logout
     │   ├── CartContext.jsx   # cart state + persistence
@@ -99,9 +108,10 @@ market-place/
     │   ├── Checkout.jsx
     │   ├── Confirmation.jsx
     │   ├── Login.jsx
+    │   ├── AddProduct.jsx
     │   └── NotFound.jsx
     └── utils/
-        └── format.js         # currency formatting
+        └── format.js         # currency formatting, pricing helpers
 ```
 
 ## Getting started
@@ -124,10 +134,14 @@ Then open http://localhost:5173 in your browser.
 
 Log in with either mock account (password for both is `demo1234`):
 
-| Name         | Email              | Password |
-| ------------ | ------------------ | -------- |
-| Chris Miller | chris@example.com  | demo1234 |
-| Ana Souza    | ana@example.com    | demo1234 |
+| Name         | Email              | Password | Role  |
+| ------------ | ------------------ | -------- | ----- |
+| Chris Miller | chris@example.com  | demo1234 | admin |
+| Ana Souza    | ana@example.com    | demo1234 | user  |
+
+Chris has admin access — after logging in, an "+ Add product" button appears
+in the nav bar. Ana is a regular user and will be redirected to login if
+she visits `/add-product`.
 
 There is also a "Fill demo credentials" button on the login page.
 
@@ -135,13 +149,20 @@ There is also a "Fill demo credentials" button on the login page.
 
 Everything is client-side:
 
-- `src/data/inventory.js` holds the rental catalog.
+- `src/data/inventory.js` holds the seeded catalog (rentals + offer items).
 - `src/services/api.js` simulates a backend with artificial latencies,
   exposing an async interface (`getInventory`, `getItem`, `login`,
-  `createBooking`) — structured so a real backend can slot in later.
-- `AuthContext` persists the logged-in user in `localStorage`.
-- `CartContext` persists the cart in `localStorage`.
+  `createBooking`, `addProduct`). `getInventory` merges seeded data with
+  any products added via the admin form (stored in
+  `localStorage('marine.extra_products')`).
+- `AuthContext` persists the logged-in user in `localStorage` (including
+  the `role` field for admin access control).
+- `CartContext` persists the cart in `localStorage`, handling both rental
+  (`pricePerHour × hours × qty`) and sale (`price × qty`) items.
 - `BookingsContext` holds mock bookings in memory for the current session.
+- `format.js` exposes `isForSale`, `unitPrice` and `lineTotal` helpers
+  that branch on the `soldBy` field to keep pricing logic consistent
+  across cart, checkout and detail pages.
 
 No real payment is processed; checkout is a simulated flow.
 
