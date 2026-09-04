@@ -4,7 +4,7 @@ import api from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useBookings } from '../context/BookingsContext'
-import { formatPrice } from '../utils/format'
+import { formatPrice, isForSale, lineTotal } from '../utils/format'
 
 const todayLocal = () => {
   const d = new Date()
@@ -73,8 +73,9 @@ export default function Checkout() {
           name: i.item.name,
           qty: i.qty,
           hours: i.hours,
+          soldBy: i.item.soldBy || 'hour',
           pricePerHour: i.item.pricePerHour,
-          lineTotal: i.item.pricePerHour * i.hours * i.qty,
+          lineTotal: lineTotal(i.item, i.hours, i.qty),
         })),
         total: subtotal,
         date,
@@ -179,10 +180,11 @@ export default function Checkout() {
             {items.map(({ itemId, item, qty, hours }) => (
               <li key={itemId} className="flex justify-between gap-2 text-sm">
                 <span className="text-slate-300">
-                  {item.name} × {qty} ({hours}h)
+                  {item.name} × {qty}
+                  {isForSale(item) ? '' : ` (${hours}h)`}
                 </span>
                 <span className="font-semibold text-white">
-                  {formatPrice(item.pricePerHour * hours * qty)}
+                  {formatPrice(lineTotal(item, hours, qty))}
                 </span>
               </li>
             ))}

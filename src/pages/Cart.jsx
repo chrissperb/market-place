@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
-import { formatPrice } from '../utils/format'
+import { formatPrice, isForSale, lineTotal } from '../utils/format'
 
 export default function Cart() {
   const { items, count, subtotal, totalDeposit, updateQty, updateHours, removeItem } =
@@ -50,7 +50,10 @@ export default function Cart() {
                   {item.name}
                 </Link>
                 <p className="mt-1 text-sm text-slate-400">
-                  {formatPrice(item.pricePerHour)}/hour · {item.location}
+                  {isForSale(item)
+                    ? `${formatPrice(item.price)} each`
+                    : `${formatPrice(item.pricePerHour)}/hour`}{' '}
+                  · {item.location}
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-4">
                   <div className="flex items-center gap-2">
@@ -76,28 +79,30 @@ export default function Cart() {
                       +
                     </button>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <label
-                      htmlFor={`hours-${itemId}`}
-                      className="text-sm text-slate-400"
-                    >
-                      Hours
-                    </label>
-                    <input
-                      id={`hours-${itemId}`}
-                      type="number"
-                      min="1"
-                      max="24"
-                      value={hours}
-                      onChange={(e) => updateHours(itemId, e.target.value)}
-                      className="w-20 rounded-lg border border-slate-600 bg-slate-900 px-2 py-1.5 text-center text-white focus:border-cyan-500 focus:outline-none"
-                    />
-                  </div>
+                  {!isForSale(item) && (
+                    <div className="flex items-center gap-2">
+                      <label
+                        htmlFor={`hours-${itemId}`}
+                        className="text-sm text-slate-400"
+                      >
+                        Hours
+                      </label>
+                      <input
+                        id={`hours-${itemId}`}
+                        type="number"
+                        min="1"
+                        max="24"
+                        value={hours}
+                        onChange={(e) => updateHours(itemId, e.target.value)}
+                        className="w-20 rounded-lg border border-slate-600 bg-slate-900 px-2 py-1.5 text-center text-white focus:border-cyan-500 focus:outline-none"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex items-center justify-between sm:flex-col sm:items-end sm:gap-2">
                 <span className="text-lg font-bold text-white">
-                  {formatPrice(item.pricePerHour * hours * qty)}
+                  {formatPrice(lineTotal(item, hours, qty))}
                 </span>
                 <button
                   onClick={() => removeItem(itemId)}
@@ -112,28 +117,30 @@ export default function Cart() {
 
         <div className="mt-8 rounded-2xl bg-slate-800 p-6 ring-1 ring-slate-700">
           <div className="flex justify-between text-slate-300">
-            <span>Rental subtotal</span>
+            <span>Subtotal</span>
             <span className="font-semibold text-white">
               {formatPrice(subtotal)}
             </span>
           </div>
-          <div className="mt-2 flex justify-between text-slate-300">
-            <span>Refundable deposits</span>
-            <span className="font-semibold text-white">
-              {formatPrice(totalDeposit)}
-            </span>
-          </div>
+          {totalDeposit > 0 && (
+            <div className="mt-2 flex justify-between text-slate-300">
+              <span>Refundable deposits</span>
+              <span className="font-semibold text-white">
+                {formatPrice(totalDeposit)}
+              </span>
+            </div>
+          )}
           <div className="mt-4 flex justify-between border-t border-slate-700 pt-4 text-lg">
-            <span className="font-semibold text-white">
-              Total to pay now (rental)
-            </span>
+            <span className="font-semibold text-white">Total to pay now</span>
             <span className="font-bold text-cyan-400">
               {formatPrice(subtotal)}
             </span>
           </div>
-          <p className="mt-2 text-xs text-slate-500">
-            Deposits are held separately and returned on return of the equipment.
-          </p>
+          {totalDeposit > 0 && (
+            <p className="mt-2 text-xs text-slate-500">
+              Deposits are held separately and returned on return of the equipment.
+            </p>
+          )}
 
           <Link
             to="/checkout"

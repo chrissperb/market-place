@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { isForSale, lineTotal } from '../utils/format'
 
 const CartContext = createContext(null)
 
@@ -23,6 +24,8 @@ export function CartProvider({ children }) {
   }, [items])
 
   const addItem = (item, hours, qty = 1) => {
+    const sale = isForSale(item)
+    const effHours = sale ? 1 : hours
     setItems((prev) => {
       const total = Number(qty)
       const existing = prev.find((i) => i.itemId === item.id)
@@ -31,7 +34,7 @@ export function CartProvider({ children }) {
           i.itemId === item.id
             ? {
                 ...i,
-                hours: clampHours(hours),
+                hours: clampHours(effHours),
                 qty: Math.min(existing.qty + total, item.stock),
               }
             : i
@@ -42,7 +45,7 @@ export function CartProvider({ children }) {
         {
           itemId: item.id,
           item,
-          hours: clampHours(hours),
+          hours: clampHours(effHours),
           qty: Math.min(total, item.stock),
         },
       ]
@@ -79,12 +82,16 @@ export function CartProvider({ children }) {
 
   const subtotal = useMemo(
     () =>
-      items.reduce((sum, i) => sum + i.item.pricePerHour * i.hours * i.qty, 0),
+      items.reduce((sum, i) => sum + lineTotal(i.item, i.hours, i.qty), 0),
     [items]
   )
 
   const totalDeposit = useMemo(
-    () => items.reduce((sum, i) => sum + i.item.deposit * i.qty, 0),
+    () =>
+      items.reduce(
+        (sum, i) => (isForSale(i.item) ? sum : sum + i.item.deposit * i.qty),
+        0
+      ),
     [items]
   )
 

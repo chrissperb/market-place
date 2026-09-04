@@ -90,7 +90,7 @@ export default function FilterBar({ total }) {
 
       <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
         <span className="text-slate-400">
-          {total} {total === 1 ? 'rental' : 'rentals'}
+          {total} {total === 1 ? 'item' : 'items'}
         </span>
         {(category !== 'all' || q) && (
           <button

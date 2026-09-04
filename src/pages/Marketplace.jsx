@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import api from '../services/api'
 import ItemCard from '../components/ItemCard'
 import FilterBar from '../components/FilterBar'
+import { unitPrice } from '../utils/format'
 
 export default function Marketplace() {
   const [items, setItems] = useState([])
@@ -39,10 +40,10 @@ export default function Marketplace() {
     }
     switch (sort) {
       case 'price-asc':
-        list = [...list].sort((a, b) => a.pricePerHour - b.pricePerHour)
+        list = [...list].sort((a, b) => unitPrice(a) - unitPrice(b))
         break
       case 'price-desc':
-        list = [...list].sort((a, b) => b.pricePerHour - a.pricePerHour)
+        list = [...list].sort((a, b) => unitPrice(b) - unitPrice(a))
         break
       case 'rating':
         list = [...list].sort((a, b) => b.rating - a.rating)
@@ -58,7 +59,7 @@ export default function Marketplace() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-white">Marketplace</h1>
         <p className="mt-1 text-slate-400">
-          Browse the fleet and gear, then book by the hour.
+          Browse the fleet and gear — rent by the hour or buy at a discount.
         </p>
       </div>
 

@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
-import Navbar from './components/Navbar'
+import Header from './components/Header'
 import Footer from './components/Footer'
 import Home from './pages/Home'
 import Marketplace from './pages/Marketplace'
@@ -8,6 +8,7 @@ import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import Confirmation from './pages/Confirmation'
 import Login from './pages/Login'
+import AddProduct from './pages/AddProduct'
 import NotFound from './pages/NotFound'
 
 export default function App() {
@@ -19,7 +20,7 @@ export default function App() {
       >
         Skip to content
       </a>
-      <Navbar />
+      <Header />
       <main id="main" className="flex-1" tabIndex={-1}>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/confirmation" element={<Confirmation />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/add-product" element={<AddProduct />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

@@ -4,6 +4,7 @@ const users = [
     name: 'Chris Miller',
     email: 'chris@example.com',
     password: 'demo1234',
+    role: 'admin',
   },
   {
     id: 'user-2',

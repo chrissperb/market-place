@@ -6,6 +6,7 @@ export const CATEGORIES = [
   'surfboard',
   'waverunner',
   'fishing',
+  'offers',
 ]
 
 export const CATEGORY_LABELS = {
@@ -16,6 +17,7 @@ export const CATEGORY_LABELS = {
   surfboard: 'Surfboards',
   waverunner: 'Waverunners',
   fishing: 'Fishing Gear',
+  offers: 'Offers',
 }
 
 const inventory = [
@@ -186,6 +188,51 @@ const inventory = [
       'https://images.unsplash.com/photo-1708748978230-510e06b24530?auto=format&fit=crop&w=900&q=60',
     description:
       'Fishing kayak bundle with rod holders and a casting combo. Head out to the flats for an afternoon of light tackle action.',
+  },
+  {
+    id: 'ppe-01',
+    name: 'Life Jacket (Adult)',
+    category: 'offers',
+    soldBy: 'unit',
+    price: 39,
+    compareAt: 55,
+    stock: 15,
+    rating: 4.6,
+    location: 'Marina Bay',
+    image:
+      'https://images.unsplash.com/photo-1777891733988-540ac2abbd40?auto=format&fit=crop&w=900&q=60',
+    description:
+      'USCG-approved adult life vest with adjustable straps. Buy your own for a perfect fit on every outing.',
+  },
+  {
+    id: 'ppd-01',
+    name: 'Dry Bag 20L',
+    category: 'offers',
+    soldBy: 'unit',
+    price: 24,
+    compareAt: 40,
+    stock: 20,
+    rating: 4.5,
+    location: 'South Beach',
+    image:
+      'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=900&q=60',
+    description:
+      'Waterproof roll-top dry bag for phones, keys and valuables. Keeps your gear safe on the water.',
+  },
+  {
+    id: 'surf-01',
+    name: 'Surfboard Leash (6ft)',
+    category: 'offers',
+    soldBy: 'unit',
+    price: 18,
+    compareAt: 30,
+    stock: 12,
+    rating: 4.4,
+    location: 'Point Break',
+    image:
+      'https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=900&q=60',
+    description:
+      'Reliable ankle leash with a quick-release strap. Essential board safety gear for any surfer.',
   },
 ]
 
