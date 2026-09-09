@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import { useAuth } from '../context/AuthContext'
-import { useCart } from '../context/CartContext'
+import { selectCartCount } from '../store/cartSlice'
 
 const linkClass = ({ isActive }) =>
   `px-1 py-2 font-medium transition-colors ${
@@ -10,11 +11,13 @@ const linkClass = ({ isActive }) =>
 
 export default function Header() {
   const { user, logout } = useAuth()
-  const { count } = useCart()
+  const count = useSelector(selectCartCount)
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
 
   const handleLogout = () => {
+    const ok = window.confirm('Log out of SeaRent?')
+    if (!ok) return
     logout()
     setOpen(false)
     navigate('/')
@@ -66,6 +69,20 @@ export default function Header() {
                   }
                 >
                   + Add product
+                </NavLink>
+              )}
+              {user.role === 'admin' && (
+                <NavLink
+                  to="/manage"
+                  className={({ isActive }) =>
+                    `rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors ${
+                      isActive
+                        ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400'
+                        : 'border-slate-600 text-slate-200 hover:bg-slate-700'
+                    }`
+                  }
+                >
+                  Manage
                 </NavLink>
               )}
               <NavLink
@@ -136,6 +153,15 @@ export default function Header() {
               onClick={() => setOpen(false)}
             >
               + Add product
+            </NavLink>
+          )}
+          {user && user.role === 'admin' && (
+            <NavLink
+              to="/manage"
+              className={linkClass}
+              onClick={() => setOpen(false)}
+            >
+              Manage
             </NavLink>
           )}
           {user && (

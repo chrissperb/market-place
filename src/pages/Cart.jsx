@@ -1,10 +1,22 @@
 import { Link } from 'react-router-dom'
-import { useCart } from '../context/CartContext'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  removeItem,
+  selectCartCount,
+  selectCartItems,
+  selectCartSubtotal,
+  selectTotalDeposit,
+  updateHours,
+  updateQty,
+} from '../store/cartSlice'
 import { formatPrice, isForSale, lineTotal } from '../utils/format'
 
 export default function Cart() {
-  const { items, count, subtotal, totalDeposit, updateQty, updateHours, removeItem } =
-    useCart()
+  const dispatch = useDispatch()
+  const items = useSelector(selectCartItems)
+  const count = useSelector(selectCartCount)
+  const subtotal = useSelector(selectCartSubtotal)
+  const totalDeposit = useSelector(selectTotalDeposit)
 
   if (items.length === 0) {
     return (
@@ -61,7 +73,7 @@ export default function Cart() {
                       Qty
                     </label>
                     <button
-                      onClick={() => updateQty(itemId, -1)}
+                      onClick={() => dispatch(updateQty({ itemId, delta: -1 }))}
                       className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-600 text-white hover:bg-slate-700"
                       aria-label="Decrease quantity"
                     >
@@ -71,7 +83,7 @@ export default function Cart() {
                       {qty}
                     </span>
                     <button
-                      onClick={() => updateQty(itemId, 1)}
+                      onClick={() => dispatch(updateQty({ itemId, delta: 1 }))}
                       disabled={qty >= item.stock}
                       className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-600 text-white hover:bg-slate-700 disabled:opacity-40"
                       aria-label="Increase quantity"
@@ -93,7 +105,7 @@ export default function Cart() {
                         min="1"
                         max="24"
                         value={hours}
-                        onChange={(e) => updateHours(itemId, e.target.value)}
+                        onChange={(e) => dispatch(updateHours({ itemId, hours: e.target.value }))}
                         className="w-20 rounded-lg border border-slate-600 bg-slate-900 px-2 py-1.5 text-center text-white focus:border-cyan-500 focus:outline-none"
                       />
                     </div>
@@ -105,7 +117,7 @@ export default function Cart() {
                   {formatPrice(lineTotal(item, hours, qty))}
                 </span>
                 <button
-                  onClick={() => removeItem(itemId)}
+                  onClick={() => dispatch(removeItem(itemId))}
                   className="text-sm text-red-400 hover:text-red-300"
                 >
                   Remove

@@ -9,7 +9,9 @@ import Checkout from './pages/Checkout'
 import Confirmation from './pages/Confirmation'
 import Login from './pages/Login'
 import AddProduct from './pages/AddProduct'
+import ManageProducts from './pages/ManageProducts'
 import NotFound from './pages/NotFound'
+import RequireAuth from './components/RequireAuth'
 import AccountLayout from './pages/account/AccountLayout'
 import Profile from './pages/account/Profile'
 import Bookings from './pages/account/Bookings'
@@ -34,8 +36,9 @@ export default function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/confirmation" element={<Confirmation />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/add-product" element={<AddProduct />} />
-          <Route path="/account" element={<AccountLayout />}>
+          <Route path="/add-product" element={<RequireAuth role="admin"><AddProduct /></RequireAuth>} />
+          <Route path="/manage" element={<RequireAuth role="admin"><ManageProducts /></RequireAuth>} />
+          <Route path="/account" element={<RequireAuth><AccountLayout /></RequireAuth>}>
             <Route index element={<Profile />} />
             <Route path="bookings" element={<Bookings />} />
             <Route path="orders" element={<Orders />} />

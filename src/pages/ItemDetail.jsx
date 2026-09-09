@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 import api from '../services/api'
-import { useCart } from '../context/CartContext'
+import { addItem } from '../store/cartSlice'
 import { CATEGORY_LABELS } from '../data/inventory'
 import { formatPrice, isForSale, lineTotal } from '../utils/format'
 
 export default function ItemDetail() {
   const { id } = useParams()
-  const { addItem } = useCart()
+  const dispatch = useDispatch()
 
   const [item, setItem] = useState(null)
   const [status, setStatus] = useState('loading') // loading | ok | notfound
@@ -78,7 +79,7 @@ export default function ItemDetail() {
   const soldOut = item.stock === 0
 
   const handleAdd = () => {
-    addItem(item, hours, qty)
+    dispatch(addItem(item, hours, qty))
     setAdded(true)
   }
 

@@ -1,11 +1,13 @@
-import { useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import api from '../services/api'
-import { useAuth } from '../context/AuthContext'
 import { CATEGORIES, CATEGORY_LABELS } from '../data/inventory'
 
+const isCustom = (id) => id.startsWith('ext-')
+
 export default function AddProduct() {
-  const { user } = useAuth()
+  const [params] = useSearchParams()
+  const editId = params.get('edit')
 
   const [soldBy, setSoldBy] = useState('hour')
   const [name, setName] = useState('')
@@ -21,13 +23,97 @@ export default function AddProduct() {
   const [image, setImage] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
-  const [created, setCreated] = useState(null)
+  const [saved, setSaved] = useState(null)
+  const [loadStatus, setLoadStatus] = useState(
+    editId ? 'loading' : 'idle'
+  ) // idle | loading | ok | notfound | readonly
 
-  if (!user || user.role !== 'admin') {
-    return <Navigate to="/login" replace />
+  useEffect(() => {
+    if (!editId) {
+      setLoadStatus('idle')
+      return
+    }
+    let active = true
+    setLoadStatus('loading')
+    api
+      .getItem(editId)
+      .then((item) => {
+        if (!active) return
+        if (!isCustom(item.id)) {
+          setLoadStatus('readonly')
+          return
+        }
+        setSoldBy(item.soldBy || 'hour')
+        setName(item.name)
+        setCategory(item.category)
+        setPricePerHour(item.pricePerHour != null ? String(item.pricePerHour) : '')
+        setDeposit(item.deposit != null ? String(item.deposit) : '')
+        setPrice(item.price != null ? String(item.price) : '')
+        setCompareAt(item.compareAt != null ? String(item.compareAt) : '')
+        setStock(item.stock != null ? String(item.stock) : '')
+        setRating(item.rating != null ? String(item.rating) : '')
+        setLocation(item.location || '')
+        setDescription(item.description || '')
+        setImage(item.image || '')
+        setLoadStatus('ok')
+      })
+      .catch(() => {
+        if (active) setLoadStatus('notfound')
+      })
+    return () => {
+      active = false
+    }
+  }, [editId])
+
+  if (loadStatus === 'loading') {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+        <div className="space-y-4">
+          <div className="h-8 w-1/3 animate-pulse rounded bg-slate-800" />
+          <div className="h-96 animate-pulse rounded-2xl bg-slate-800" />
+        </div>
+      </div>
+    )
   }
 
-  if (created) {
+  if (loadStatus === 'notfound') {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-24 text-center sm:px-6">
+        <p className="text-5xl">🛟</p>
+        <h1 className="mt-4 text-3xl font-bold text-white">Product not found</h1>
+        <p className="mt-2 text-slate-400">
+          The product you&apos;re trying to edit doesn&apos;t exist or was removed.
+        </p>
+        <Link
+          to="/manage"
+          className="mt-6 inline-block rounded-xl bg-cyan-500 px-6 py-3 font-semibold text-slate-900 hover:bg-cyan-400"
+        >
+          Back to products
+        </Link>
+      </div>
+    )
+  }
+
+  if (loadStatus === 'readonly') {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-24 text-center sm:px-6">
+        <p className="text-5xl">🔒</p>
+        <h1 className="mt-4 text-3xl font-bold text-white">Read-only product</h1>
+        <p className="mt-2 text-slate-400">
+          Seed products shipped with the demo can&apos;t be edited. Create your
+          own products to manage them here.
+        </p>
+        <Link
+          to="/manage"
+          className="mt-6 inline-block rounded-xl bg-cyan-500 px-6 py-3 font-semibold text-slate-900 hover:bg-cyan-400"
+        >
+          Back to products
+        </Link>
+      </div>
+    )
+  }
+
+  if (saved) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-24 text-center sm:px-6">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15 ring-1 ring-emerald-500/50">
@@ -35,25 +121,36 @@ export default function AddProduct() {
             <path d="M20 6L9 17l-5-5" />
           </svg>
         </div>
-        <h1 className="mt-5 text-3xl font-bold text-white">Product created!</h1>
+        <h1 className="mt-5 text-3xl font-bold text-white">
+          {editId ? 'Product updated!' : 'Product created!'}
+        </h1>
         <p className="mt-2 text-slate-400">
-          <span className="font-mono font-semibold text-cyan-400">{created.name}</span>{' '}
-          has been added to the catalogue.
+          <span className="font-mono font-semibold text-cyan-400">{saved.name}</span>{' '}
+          has been {editId ? 'saved to' : 'added to'} the catalogue.
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <Link
-            to={`/item/${created.id}`}
+            to={`/item/${saved.id}`}
             className="rounded-xl bg-cyan-500 px-6 py-3 font-semibold text-slate-900 hover:bg-cyan-400"
           >
             View product
           </Link>
-          <Link
-            to="/add-product"
-            onClick={() => setCreated(null)}
-            className="rounded-xl border border-slate-600 px-6 py-3 font-semibold text-slate-200 hover:bg-slate-800"
-          >
-            Add another
-          </Link>
+          {editId ? (
+            <Link
+              to="/manage"
+              className="rounded-xl border border-slate-600 px-6 py-3 font-semibold text-slate-200 hover:bg-slate-800"
+            >
+              Back to products
+            </Link>
+          ) : (
+            <Link
+              to="/add-product"
+              onClick={() => setSaved(null)}
+              className="rounded-xl border border-slate-600 px-6 py-3 font-semibold text-slate-200 hover:bg-slate-800"
+            >
+              Add another
+            </Link>
+          )}
         </div>
       </div>
     )
@@ -86,37 +183,45 @@ export default function AddProduct() {
     setSubmitting(true)
     setError('')
 
+    const payload = {
+      name: name.trim(),
+      category,
+      soldBy,
+      pricePerHour: soldBy === 'hour' ? Number(pricePerHour) : undefined,
+      deposit: soldBy === 'hour' && deposit ? Number(deposit) : undefined,
+      price: soldBy === 'unit' ? Number(price) : undefined,
+      compareAt: soldBy === 'unit' && compareAt ? Number(compareAt) : undefined,
+      stock: Number(stock),
+      rating: rating ? Number(rating) : 0,
+      location: location.trim(),
+      description: description.trim(),
+      image: image.trim(),
+    }
+
     try {
-      const product = await api.addProduct({
-        name: name.trim(),
-        category,
-        soldBy,
-        pricePerHour: soldBy === 'hour' ? Number(pricePerHour) : undefined,
-        deposit: soldBy === 'hour' && deposit ? Number(deposit) : undefined,
-        price: soldBy === 'unit' ? Number(price) : undefined,
-        compareAt: soldBy === 'unit' && compareAt ? Number(compareAt) : undefined,
-        stock: Number(stock),
-        rating: rating ? Number(rating) : 0,
-        location: location.trim(),
-        description: description.trim(),
-        image: image.trim(),
-      })
-      setCreated(product)
+      const product = editId
+        ? await api.updateProduct(editId, payload)
+        : await api.addProduct(payload)
+      setSaved(product)
     } catch {
       setError('Something went wrong. Please try again.')
       setSubmitting(false)
     }
   }
 
+  const isEdit = Boolean(editId)
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-white">Add product</h1>
+        <h1 className="text-3xl font-bold text-white">
+          {isEdit ? 'Edit product' : 'Add product'}
+        </h1>
         <Link
-          to="/market"
+          to={isEdit ? '/manage' : '/market'}
           className="text-sm font-semibold text-cyan-400 hover:text-cyan-300"
         >
-          ← Back to marketplace
+          ← {isEdit ? 'Back to products' : 'Back to marketplace'}
         </Link>
       </div>
 
@@ -363,7 +468,13 @@ export default function AddProduct() {
           disabled={submitting}
           className="w-full rounded-xl bg-cyan-500 py-3 font-semibold text-slate-900 transition-colors hover:bg-cyan-400 disabled:opacity-60"
         >
-          {submitting ? 'Creating product…' : 'Create product'}
+          {submitting
+            ? isEdit
+              ? 'Saving changes…'
+              : 'Creating product…'
+            : isEdit
+              ? 'Save changes'
+              : 'Create product'}
         </button>
       </form>
     </div>
