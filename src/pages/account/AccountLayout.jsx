@@ -1,4 +1,4 @@
-import { Navigate, NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
 const tabClass = ({ isActive }) =>
@@ -10,10 +10,6 @@ const tabClass = ({ isActive }) =>
 
 export default function AccountLayout() {
   const { user } = useAuth()
-
-  if (!user) {
-    return <Navigate to="/login?next=/account" replace />
-  }
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">

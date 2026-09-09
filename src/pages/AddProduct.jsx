@@ -1,12 +1,9 @@
 import { useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import api from '../services/api'
-import { useAuth } from '../context/AuthContext'
 import { CATEGORIES, CATEGORY_LABELS } from '../data/inventory'
 
 export default function AddProduct() {
-  const { user } = useAuth()
-
   const [soldBy, setSoldBy] = useState('hour')
   const [name, setName] = useState('')
   const [category, setCategory] = useState(CATEGORIES[0])
@@ -22,10 +19,6 @@ export default function AddProduct() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [created, setCreated] = useState(null)
-
-  if (!user || user.role !== 'admin') {
-    return <Navigate to="/login" replace />
-  }
 
   if (created) {
     return (
