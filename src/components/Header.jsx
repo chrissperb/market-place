@@ -15,6 +15,8 @@ export default function Header() {
   const [open, setOpen] = useState(false)
 
   const handleLogout = () => {
+    const ok = window.confirm('Log out of SeaRent?')
+    if (!ok) return
     logout()
     setOpen(false)
     navigate('/')
