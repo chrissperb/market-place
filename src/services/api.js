@@ -55,6 +55,30 @@ const api = {
     return { ...product }
   },
 
+  async updateProduct(id, data) {
+    await delay(300)
+    const extras = loadExtras()
+    const idx = extras.findIndex((p) => p.id === id)
+    if (idx === -1) {
+      throw new Error('NOT_FOUND')
+    }
+    extras[idx] = { ...extras[idx], ...data }
+    saveExtras(extras)
+    return { ...extras[idx] }
+  },
+
+  async deleteProduct(id) {
+    await delay(300)
+    const extras = loadExtras()
+    const idx = extras.findIndex((p) => p.id === id)
+    if (idx === -1) {
+      throw new Error('NOT_FOUND')
+    }
+    extras.splice(idx, 1)
+    saveExtras(extras)
+    return { ok: true }
+  },
+
   /* Auth */
   async login(email, password) {
     await delay(400)

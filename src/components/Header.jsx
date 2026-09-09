@@ -68,6 +68,20 @@ export default function Header() {
                   + Add product
                 </NavLink>
               )}
+              {user.role === 'admin' && (
+                <NavLink
+                  to="/manage"
+                  className={({ isActive }) =>
+                    `rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors ${
+                      isActive
+                        ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400'
+                        : 'border-slate-600 text-slate-200 hover:bg-slate-700'
+                    }`
+                  }
+                >
+                  Manage
+                </NavLink>
+              )}
               <NavLink
                 to="/account"
                 className={({ isActive }) =>
@@ -136,6 +150,15 @@ export default function Header() {
               onClick={() => setOpen(false)}
             >
               + Add product
+            </NavLink>
+          )}
+          {user && user.role === 'admin' && (
+            <NavLink
+              to="/manage"
+              className={linkClass}
+              onClick={() => setOpen(false)}
+            >
+              Manage
             </NavLink>
           )}
           {user && (
