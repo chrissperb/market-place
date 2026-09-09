@@ -1,9 +1,15 @@
 import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import api from '../services/api'
 import { useAuth } from '../context/AuthContext'
-import { useCart } from '../context/CartContext'
 import { useBookings } from '../context/BookingsContext'
+import {
+  clearCart,
+  selectCartCount,
+  selectCartItems,
+  selectCartSubtotal,
+} from '../store/cartSlice'
 import { formatPrice, isForSale, lineTotal } from '../utils/format'
 
 const todayLocal = () => {
@@ -15,7 +21,10 @@ const todayLocal = () => {
 
 export default function Checkout() {
   const { user } = useAuth()
-  const { items, subtotal, count, clearCart } = useCart()
+  const dispatch = useDispatch()
+  const items = useSelector(selectCartItems)
+  const subtotal = useSelector(selectCartSubtotal)
+  const count = useSelector(selectCartCount)
   const { addBooking } = useBookings()
   const navigate = useNavigate()
 
@@ -83,7 +92,7 @@ export default function Checkout() {
         note,
       })
       addBooking(booking)
-      clearCart()
+      dispatch(clearCart())
       navigate('/confirmation', { state: { booking } })
     } catch {
       setError('Something went wrong. Please try again.')

@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import { useAuth } from '../context/AuthContext'
-import { useCart } from '../context/CartContext'
+import { selectCartCount } from '../store/cartSlice'
 
 const linkClass = ({ isActive }) =>
   `px-1 py-2 font-medium transition-colors ${
@@ -10,7 +11,7 @@ const linkClass = ({ isActive }) =>
 
 export default function Header() {
   const { user, logout } = useAuth()
-  const { count } = useCart()
+  const count = useSelector(selectCartCount)
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
 
