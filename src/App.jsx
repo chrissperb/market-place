@@ -10,6 +10,10 @@ import Confirmation from './pages/Confirmation'
 import Login from './pages/Login'
 import AddProduct from './pages/AddProduct'
 import NotFound from './pages/NotFound'
+import AccountLayout from './pages/account/AccountLayout'
+import Profile from './pages/account/Profile'
+import Bookings from './pages/account/Bookings'
+import Orders from './pages/account/Orders'
 
 export default function App() {
   return (
@@ -31,6 +35,11 @@ export default function App() {
           <Route path="/confirmation" element={<Confirmation />} />
           <Route path="/login" element={<Login />} />
           <Route path="/add-product" element={<AddProduct />} />
+          <Route path="/account" element={<AccountLayout />}>
+            <Route index element={<Profile />} />
+            <Route path="bookings" element={<Bookings />} />
+            <Route path="orders" element={<Orders />} />
+          </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

@@ -68,6 +68,18 @@ export default function Header() {
                   + Add product
                 </NavLink>
               )}
+              <NavLink
+                to="/account"
+                className={({ isActive }) =>
+                  `rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors ${
+                    isActive
+                      ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400'
+                      : 'border-slate-600 text-slate-200 hover:bg-slate-700'
+                  }`
+                }
+              >
+                My account
+              </NavLink>
               <span className="text-sm text-slate-300">{user.name}</span>
               <button
                 onClick={handleLogout}
@@ -124,6 +136,15 @@ export default function Header() {
               onClick={() => setOpen(false)}
             >
               + Add product
+            </NavLink>
+          )}
+          {user && (
+            <NavLink
+              to="/account"
+              className={linkClass}
+              onClick={() => setOpen(false)}
+            >
+              My account
             </NavLink>
           )}
           <div className="mt-2 border-t border-slate-700/60 pt-3">

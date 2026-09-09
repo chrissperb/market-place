@@ -96,6 +96,12 @@ export default function Confirmation() {
             Book more gear
           </Link>
           <Link
+            to="/account/bookings"
+            className="rounded-xl border border-slate-600 px-6 py-3 font-semibold text-slate-200 hover:bg-slate-700"
+          >
+            View my bookings
+          </Link>
+          <Link
             to="/"
             className="rounded-xl border border-slate-600 px-6 py-3 font-semibold text-slate-200 hover:bg-slate-700"
           >
